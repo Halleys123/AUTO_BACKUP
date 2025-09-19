@@ -1,0 +1,11 @@
+# Ignore typical dev junk
+node_modules
+bin
+build
+*.exe
+*.log
+*.tmp
+
+# Future things
+dist
+coverage

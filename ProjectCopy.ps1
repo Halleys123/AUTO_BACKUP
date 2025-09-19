@@ -1,0 +1,1 @@
+.\src\CopyToOneDrive.ps1 -Source "E:\Projects" -Destination "C:\Users\arnav\OneDrive\Projects" -ExcludeFile ".\excludes.txt"
