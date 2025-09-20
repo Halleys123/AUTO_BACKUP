@@ -1,28 +1,32 @@
-# AUTO BACKUP
+# AUTO BACKUP - Junction-Only Sync for OneDrive
 
-- A simple script to back up files and directories automatically to one drive.
-- Similar to rclone but with a simpler interface you just tell it which files to back up and source destination that should be inside OneDrive folder.
+A PowerShell script that creates directory junctions (hard links) between folders on another drive and your OneDrive folder, without duplicating files.
+
+## Features
+
+- Creates junctions using mklink /J (not symbolic links)
+- Never copies files - only creates directory links
+- Skips excluded directories (like node_modules, .git)
+- Removes orphaned items from OneDrive
+- Protects specified items from deletion
+
+## Usage
 
 ```powershell
-# Usage
-./src/CopyToOneDrive.ps1 -Source "C:\path\to\source" -Destination "C:\path\to\OneDrive\Backup" -Exclude "C:\path\to\exclude"
-./src/SyncToOneDrive.ps1 -Source "C:\path\to\source" -Destination "C:\path\to\OneDrive\Backup" -Exclude "C:\path\to\exclude"
+.\JunctionOnlySync.ps1 -SourceRoot "E:\Projects" -DestRoot "$env:USERPROFILE\OneDrive\Projects"
 ```
 
-## Sync vs Copy
+## Parameters
 
-| Command | Description                                                                                                                                                                                                |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Copy    | Copies files from source to destination. If a file already exists in the destination, it will be overwritten. It will not delete any files in the destination that are not present in the source.          |
-| Sync    | Synchronizes files from source to destination. It will copy new and updated files from the source to the destination, and it will also delete files in the destination that are not present in the source. |
+- SourceRoot: Source directory (e.g., "E:\Projects")
+- DestRoot: OneDrive destination directory
+- ExcludeFile: Path to file with exclusion patterns (default: .\excludes.txt)
+- ProtectFile: Path to file with protected patterns (default: .\protect.txt)
+- DryRun: Preview changes without executing
 
-## Exclude Files
+## How It Works
 
-- You can exclude files or directories by using the `-Exclude` parameter.
-- It takes path to a file that should contain list of files names or parameters similar to gitignore file.
-- You can also use wildcards in the exclude file.
-
-## Utility Scripts
-
-1. CopyAll -> Use CopyToOneDrive.ps1 to copy some predefined folders to OneDrive.
-2. SyncAll -> Use SyncToOneDrive.ps1 to sync some predefined folders to OneDrive.
+1. Creates junctions for all directories in the source
+2. Skips directories matching exclude patterns
+3. Removes destination items that don't exist in source
+4. Preserves items matching protect patterns
